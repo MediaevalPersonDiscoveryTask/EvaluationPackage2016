@@ -1,34 +1,41 @@
 # MediaEval Person Discovery 2016 Evaluation Metric
 
-visible AND speaking
+### Installation
 
-### Usage
+```bash
+$ git clone https://github.com/hbredin/PersonDiscovery2016Metric.git
+$ cd PersonDiscovery2016Metric
+$ pip install -r requirements.txt
+```
+
+### Command line
+
+```bash
+$ python metric.py --queries samples/queries.txt samples/reference.txt samples/hypothesis.txt
+```
+
+```
+                   AP@1 AP@10 AP@100 n_relevant
+nicolas_sarkozy   0.000 0.299  0.213        116
+francois_hollande 0.000 0.083  0.150         26
+alain_juppe       0.000 0.000  0.000          2
+
+MEAN AVERAGE PRECISION
+MAP@1     0.000
+MAP@10    0.127
+MAP@100   0.121
+```
+
+Option `--verbose` can be used to display a progress bar.
+
+### API
 
 ```python
 >>> from metric import AveragePrecision
->>> average_precision = AveragePrecision('samples/reference.txt', K=[1, 10, 100, 1000])
+>>> average_precision = AveragePrecision('samples/reference.txt', K=[1, 10, 100])
 >>> generator = average_precision('samples/hypothesis.txt')
->>> TEMPLATE = '{query:20s} | Average Precision @ {k:4d} | {value:.3f}'
->>> for query in ['nicolas_sarkozy', 'francois_hollande', 'alain_juppe']:
-...     ap, n_relevant = generator.send(query)
-...     for i, k in enumerate(average_precision.K):
-...         print(TEMPLATE.format(query=query, k=k, value=ap[i]))
+>>> (ap1, ap10, ap100), n_relevant = generator.send('nicolas_sarkozy')
 ```
-```
-nicolas_sarkozy      | Average Precision @    1 | 0.000
-nicolas_sarkozy      | Average Precision @   10 | 0.299
-nicolas_sarkozy      | Average Precision @  100 | 0.213
-nicolas_sarkozy      | Average Precision @ 1000 | 0.194
-francois_hollande    | Average Precision @    1 | 0.000
-francois_hollande    | Average Precision @   10 | 0.083
-francois_hollande    | Average Precision @  100 | 0.150
-francois_hollande    | Average Precision @ 1000 | 0.150
-alain_juppe          | Average Precision @    1 | 0.000
-alain_juppe          | Average Precision @   10 | 0.000
-alain_juppe          | Average Precision @  100 | 0.000
-alain_juppe          | Average Precision @ 1000 | 0.002
-```
-
 
 ### File formats
 
@@ -56,7 +63,7 @@ corpus_id video_id shot_id hypothesized_person_name_1 confidence_1
 corpus_id video_id shot_id hypothesized_person_name_2 confidence_2
 ```
 
-### Mean average precision
+### Mean average precision (implementation details)
 
 Given a `person_name` query, hypotheses are sorted in decreasing order of the normalized edit distance between `person_name` and the `hypothesized_person_name`. Tied hypotheses are then sorted in decreasing order of their `confidence` score.
 In the (unlikely) case there remain tied hypotheses, those are sorted by their `temporal rank` within each video.
