@@ -42,7 +42,7 @@ Option `--verbose` can be used to display a progress bar.
 #### Reference
 
 `corpus_id video_id shot_id person_name`
-* `corpus_id` is the corpus identifier (`DW`, `INA` or `UPC`)
+* `corpus_id` is the corpus identifier (`DW`, `INA` or `3-24`)
 * `video_id` is the video identifier within the corpus
 * `shot_id` is the shot identifier within the video
 * `person_name` is the normalized name of the person
@@ -51,7 +51,7 @@ Option `--verbose` can be used to display a progress bar.
 #### Hypothesis
 
 `corpus_id video_id shot_id hypothesized_person_name confidence`
-* `corpus_id` is the corpus identifier (`DW`, `INA` or `UPC`)
+* `corpus_id` is the corpus identifier (`DW`, `INA` or `3-24`)
 * `video_id` is the video identifier within the corpus
 * `shot_id` is the shot identifier within the video
 * `person_name` is the normalized name of the person
