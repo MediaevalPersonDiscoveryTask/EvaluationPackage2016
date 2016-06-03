@@ -39,7 +39,7 @@ class Validation(object):
 
     Parameters
     ----------
-    shot : optional
+    shots : optional
         Path to list of shots
     """
 
@@ -57,7 +57,7 @@ class Validation(object):
         shots = set((c, v, s) for _, (c, v, s, _, _) in shots.iterrows())
         return shots
 
-    def _load_submission(self, path):
+    def _load_submission(self, fp):
 
         names = ['corpus_id', 'video_id', 'shot_id',
                  'person_name', 'confidence']
@@ -65,16 +65,16 @@ class Validation(object):
                  'person_name': str, 'confidence': np.float32}
 
         try:
-            submission = pd.read_table(path, delim_whitespace=True,
+            submission = pd.read_table(fp, delim_whitespace=True,
                                        header=None, names=names,
                                        dtype=dtype)
         except Exception as e:
             # TODO
-            raise
+            raise e
 
         return submission
 
-    def _load_evidence(self, path):
+    def _load_evidence(self, fp):
 
         names = ['person_name',
                  'corpus_id', 'video_id',
@@ -84,12 +84,12 @@ class Validation(object):
                  'modality': str, 'timestamp': str}
 
         try:
-            evidence = pd.read_table(path, delim_whitespace=True,
+            evidence = pd.read_table(fp, delim_whitespace=True,
                                      header=None, names=names,
                                      dtype=dtype)
         except Exception as e:
             # TODO
-            raise
+            raise e
 
         return evidence
 
@@ -146,10 +146,10 @@ class Validation(object):
             MESSAGE = 'Incorrect modality in evidence ({modality})'
             raise ValueError(MESSAGE.format(modality=modality))
 
-    def __call__(self, submission, evidence=None):
+    def __call__(self, fp_submission, fp_evidence=None):
 
         try:
-            submission = self._load_submission(submission)
+            submission = self._load_submission(fp_submission)
         except ValueError as e:
             raise e
 
@@ -160,10 +160,10 @@ class Validation(object):
         if self.shots:
             self.__submission_shots(submission)
 
-        if evidence:
+        if fp_evidence:
 
             try:
-                evidence = self._load_evidence(evidence)
+                evidence = self._load_evidence(fp_evidence)
             except ValueError as e:
                 raise e
 
