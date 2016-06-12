@@ -79,7 +79,7 @@ class Validation(object):
         names = ['person_name',
                  'corpus_id', 'video_id',
                  'modality', 'timestamp']
-        dytpe = {'person_name': str,
+        dtype = {'person_name': str,
                  'corpus_id': str, 'video_id': str,
                  'modality': str, 'timestamp': str}
 
