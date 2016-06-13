@@ -141,7 +141,7 @@ class Validation(object):
 
     def __evidence_modalities(self, evidence):
         modalities = set(evidence['modality'].unique())
-        if not modalities.isubset({'written', 'pronounced'}):
+        if not modalities.issubset({'written', 'pronounced'}):
             modality = (modalities - {'written', 'pronounced'}).pop()
             MESSAGE = 'Incorrect modality in evidence ({modality})'
             raise ValueError(MESSAGE.format(modality=modality))
