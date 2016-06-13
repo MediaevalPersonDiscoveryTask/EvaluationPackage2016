@@ -121,6 +121,7 @@ class Validation(object):
 
         duplicated = evidence.duplicated('person_name')
         if any(duplicated):
+            person_name = duplicated.pop()
             MESSAGE = 'Duplicate person name in evidence ({person_name})'
             raise ValueError(MESSAGE.format(person_name=person_name))
 
@@ -129,6 +130,7 @@ class Validation(object):
 
         extra = evidence_person_names - submission_person_names
         if extra:
+            person_name = extra.pop()
             MESSAGE = 'Extra person name in evidence ({person_name})'
             raise ValueError(MESSAGE.format(person_name=person_name))
 
