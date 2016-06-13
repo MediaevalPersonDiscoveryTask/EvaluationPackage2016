@@ -134,6 +134,7 @@ class Validation(object):
 
         missing = submission_person_names - evidence_person_names
         if missing:
+            person_name = missing.pop()
             MESSAGE = 'Missing person name in evidence ({person_name})'
             raise ValueError(MESSAGE.format(person_name=person_name))
 
