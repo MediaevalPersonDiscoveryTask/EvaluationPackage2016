@@ -39,15 +39,22 @@ class Validation(object):
 
     Parameters
     ----------
-    shots : optional
-        Path to list of shots
+    shots : str, optional
+        Path to list of test shots. When provided, submission should only
+        provide labels for these very shots.
+    videos : str, optional
+        Path to list of videos. When provided, evidence should only be coming
+        from these very videos.
     """
 
-    def __init__(self, shots=None):
+    def __init__(self, shots=None, videos=None):
         super(Validation, self).__init__()
         self.shots = shots
         if self.shots:
             self.shots_ = self._load_shots(self.shots)
+        self.videos = videos
+        if self.videos:
+            self.videos_ = self._load_videos(self.videos)
 
     def _load_shots(self, path):
         names = ['corpus_id', 'video_id', 'shot_id', 'start_time', 'end_time']
@@ -56,6 +63,14 @@ class Validation(object):
                               header=None, names=names, dtype=dtype)
         shots = set((c, v, s) for _, (c, v, s, _, _) in shots.iterrows())
         return shots
+
+    def _load_videos(self, path):
+        names = ['corpus_id', 'video_id']
+        dtype = {'corpus_id': str, 'video_id': str}
+        videos = pd.read_table(path, delim_whitespace=True,
+                               header=None, names=names, dtype=dtype)
+        videos = set((c, v) for _, (c, v) in videos.iterrows())
+        return videos
 
     def _load_submission(self, fp):
 
@@ -117,6 +132,15 @@ class Validation(object):
 
         return True
 
+    def __evidence_videos(self, evidence):
+        videos = set((c, v) for _, (_, c, v, _, _) in evidence.iterrows())
+        invalid_videos = videos - self.videos_
+        if invalid_videos:
+            c, v = invalid_videos.pop()
+            MESSAGE = 'Invalid video ({corpus_id} {video_id}) in evidence.'
+            message = MESSAGE.format(corpus_id=c, video_id=v)
+            raise ValueError(message)
+
     def __evidence_person_names(self, submission, evidence):
 
         duplicated = evidence.duplicated('person_name')
@@ -169,6 +193,10 @@ class Validation(object):
                 evidence = self._load_evidence(fp_evidence)
             except ValueError as e:
                 raise e
+
+            # validate videos
+            if self.videos:
+                self.__evidence_videos(evidence)
 
             # validate evidence person names
             self.__evidence_person_names(submission, evidence)
