@@ -96,7 +96,7 @@ class Validation(object):
                  'modality', 'timestamp']
         dtype = {'person_name': str,
                  'corpus_id': str, 'video_id': str,
-                 'modality': str, 'timestamp': str}
+                 'modality': str, 'timestamp': np.float32}
 
         try:
             evidence = pd.read_table(fp, delim_whitespace=True,
@@ -141,6 +141,8 @@ class Validation(object):
             message = MESSAGE.format(corpus_id=c, video_id=v)
             raise ValueError(message)
 
+        return True
+
     def __evidence_person_names(self, submission, evidence):
 
         duplicated = evidence.duplicated('person_name')
@@ -173,6 +175,21 @@ class Validation(object):
             MESSAGE = 'Incorrect modality in evidence ({modality})'
             raise ValueError(MESSAGE.format(modality=modality))
 
+    def __evidence_timestamps(self, evidence):
+        timestamps = evidence['timestamp']
+
+        not_finite = np.where(~np.isfinite(timestamps))[0]
+        if len(not_finite):
+            MESSAGE = 'Incorrect timestamp in evidence at line {line:d}'
+            raise ValueError(MESSAGE.format(line=not_finite[0]+1))
+
+        negative = np.where(timestamps < 0.)[0]
+        if len(negative):
+            MESSAGE = 'Negative timestamp in evidence at line {line:d}'
+            raise ValueError(MESSAGE.format(line=negative[0]+1))
+
+        return True
+
     def __call__(self, fp_submission, fp_evidence=None):
 
         try:
@@ -197,6 +214,9 @@ class Validation(object):
             # validate videos
             if self.videos:
                 self.__evidence_videos(evidence)
+
+            # validate timestamps
+            self.__evidence_timestamps(evidence)
 
             # validate evidence person names
             self.__evidence_person_names(submission, evidence)
