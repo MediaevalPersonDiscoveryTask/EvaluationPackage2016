@@ -132,6 +132,16 @@ class Validation(object):
 
         return True
 
+    def __submission_confidence(self, submission):
+        confidence = submission['confidence']
+
+        not_finite = np.where(~np.isfinite(confidence))[0]
+        if len(not_finite):
+            MESSAGE = 'Incorrect confidence in submission at line {line:d}'
+            raise ValueError(MESSAGE.format(line=not_finite[0]+1))
+
+        return True
+
     def __evidence_videos(self, evidence):
         videos = set((c, v) for _, (_, c, v, _, _) in evidence.iterrows())
         invalid_videos = videos - self.videos_
@@ -203,6 +213,9 @@ class Validation(object):
         # validate shots
         if self.shots:
             self.__submission_shots(submission)
+
+        # validate confidence
+        self.__submission_confidence(submission)
 
         if fp_evidence:
 
