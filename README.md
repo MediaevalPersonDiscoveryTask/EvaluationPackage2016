@@ -8,27 +8,29 @@ $ cd EvaluationPackage2016
 $ pip install -r requirements.txt
 ```
 
-### Command line
+### Command line usage
 
 ```bash
-$ python metric.py --queries samples/queries.txt samples/reference.txt samples/hypothesis.txt
+$ python metric.py --queries samples/queries.txt \
+                             samples/reference.txt \
+                             samples/hypothesis.txt
 ```
 
 ```
                    AP@1 AP@10 AP@100 n_relevant
 nicolas_sarkozy   0.000 0.299  0.213        116
-francois_hollande 0.000 0.083  0.150         26
+francois_hollande 0.000 0.083  0.101         26
 alain_juppe       0.000 0.000  0.000          2
 
 MEAN AVERAGE PRECISION
 MAP@1     0.000
 MAP@10    0.127
-MAP@100   0.121
+MAP@100   0.105
 ```
 
-Option `--verbose` can be used to display a progress bar.
+Use option `--help` for documentation.
 
-### API
+### API usage
 
 ```python
 >>> from metric import AveragePrecision
