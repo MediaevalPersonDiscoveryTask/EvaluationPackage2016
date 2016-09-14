@@ -180,12 +180,12 @@ class AveragePrecision(object):
         average_precision = []
         for k in K:
 
-            # make sure we do not look further than the number of returned
-            _k = min(n_returned, k)
+            # make sure we do not look further than the number of relevant
+            _k = min(n_relevant, k)
 
             # actual computation
             relevance =  np.array(hypothesis[:_k]['__relevance'])
-            value = np.sum(relevance * relevance.cumsum() / (np.arange(_k) + 1)) / min(n_relevant, _k)
+            value = np.sum(relevance * relevance.cumsum() / (np.arange(_k) + 1)) / _k
 
             # store average precision at current K
             average_precision.append(value)
