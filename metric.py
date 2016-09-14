@@ -37,6 +37,7 @@ Options:
   <reference.txt>           Path to reference file.
   <hypothesis.txt>          Path to hypothesis file.
   --queries=<queries.txt>   Path to list of queries.
+  --subset=<videos.txt>     Path to test subset.
   -h --help                 Show this screen.
   --verbose                 Show progress.
 """
@@ -63,6 +64,8 @@ class AveragePrecision(object):
     ----------
     reference : str
         Path to reference.
+    subset : iterable of (corpus_id, video_id) tuples
+        When provided, evaluation only on this subset
     K : iterable, optional
         Compute average precision at rank k for all value k in iterable.
         Defaults to [1, 10, 100].
@@ -74,9 +77,10 @@ class AveragePrecision(object):
     >>> for query in ['herve_bredin', 'claude_barras', 'camille_guinaudeau']:
             values, n_relevant = generator.send(query)
     """
-    def __init__(self, reference, K=[1, 10, 100]):
+    def __init__(self, reference, subset=None, K=[1, 10, 100]):
         super(AveragePrecision, self).__init__()
         self.reference = reference
+        self.subset = subset
         self.K = list(K)
 
         self.reference_ = self._load_reference(reference).groupby(['person_name'])
@@ -85,11 +89,20 @@ class AveragePrecision(object):
     def queries(self):
         return sorted(self.reference_.groups)
 
+    def in_subset(self, row):
+        """Return true if current video is part of the evaluated subset"""
+        corpus_id, video_id = row['corpus_id'], row['video_id']
+        return (corpus_id, video_id) in self.subset
+
     def _load_reference(self, path):
         names = ['corpus_id', 'video_id', 'shot_id', 'person_name']
         reference = pd.read_table(path, delim_whitespace=True,
                                   header=None, names=names,
                                   dtype=str)
+
+        if self.subset:
+            reference = reference[reference.apply(self.in_subset, axis=1)]
+
         return reference
 
     def _load_hypothesis(self, path):
@@ -103,6 +116,9 @@ class AveragePrecision(object):
         hypothesis = pd.read_table(path, delim_whitespace=True,
                                    header=None, names=names,
                                    dtype=dtype)
+
+        if self.subset:
+            hypothesis = hypothesis[hypothesis.apply(self.in_subset, axis=1)]
 
         # pre-compute length of person name
         # (will make future normalized edit distance computation faster)
@@ -200,8 +216,13 @@ if __name__ == '__main__':
 
     arguments = docopt(__doc__)
 
+    subset = arguments['--subset']
+    if subset:
+        with open(subset, 'r') as fp:
+            subset = [tuple(line.strip().split()) for line in fp]
+
     reference = arguments['<reference.txt>']
-    average_precision = AveragePrecision(reference)
+    average_precision = AveragePrecision(reference, subset=subset)
 
     queries = arguments['--queries']
     if queries:
