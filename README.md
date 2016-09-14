@@ -1,10 +1,10 @@
-# MediaEval Person Discovery 2016 Evaluation Metric
+# MediaEval Person Discovery 2016 Evaluation Package
 
 ### Installation
 
 ```bash
-$ git clone https://github.com/hbredin/PersonDiscovery2016Metric.git
-$ cd PersonDiscovery2016Metric
+$ git clone https://github.com/MediaevalPersonDiscoveryTask/EvaluationPackage2016.git
+$ cd EvaluationPackage2016
 $ pip install -r requirements.txt
 ```
 
