@@ -67,3 +67,37 @@ corpus_id video_id shot_id hypothesized_person_name_2 confidence_2
 
 Given a `person_name` query, hypotheses are sorted in decreasing order of the normalized edit distance between `person_name` and the `hypothesized_person_name`. Tied hypotheses are then sorted in decreasing order of their `confidence` score.
 In the (unlikely) case there remain tied hypotheses, those are sorted by their `temporal rank` within each video.
+
+
+### Official results
+
+#### Protocol
+
+In order to use the same experimental protocol as the one used during the 2016 campaign, one should tune their algorithm with:
+
+
+```bash
+$ python metric.py --subset reference/test.leaderboard \
+                   --verbose \
+                   reference/reference.2016-09-14.txt \
+                   YOUR_SUBMISSION_GOES_HERE.txt
+```
+
+and then evaluate with:
+
+
+```bash
+$ python metric.py --subset reference/test.eval \
+                   --verbose \
+                   reference/reference.final.txt \
+                   YOUR_SUBMISSION_GOES_HERE.txt
+```
+
+`test.leaderboard` contains the subset of the test set used for computing the leaderboard during the development phase.
+
+`reference.2016-09-14.txt` contains the state of annotations used for computing the leaderboard on the final day before the submission deadline.
+
+`test.eval` contains the subset of the test set used for the final evaluation (intersection of `test.leaderboard` and `test.eval` is obviously empty).
+
+`reference.final.txt` contains the final version of the annotation, released around the dates of the debriefing workshop (October 20-21, near Amsterdam).
+
