@@ -7,3 +7,9 @@
 
 * `reference.yyyy-mm-dd.txt`
   Dump of manual annotations at date `yyyy-mm-dd`.
+
+* `queries.txt`
+  List of queries
+
+* `queries.2+.txt`
+  List of queries of people appearing in at least 2 videos  

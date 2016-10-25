@@ -90,8 +90,9 @@ and then evaluate with:
 
 ```bash
 $ python metric.py --subset reference/test.eval \
+                   --queries reference/queries.txt \
                    --verbose \
-                   reference/reference.final.txt \
+                   reference/reference.2016-10-16.txt \
                    YOUR_SUBMISSION_GOES_HERE.txt
 ```
 
@@ -101,5 +102,10 @@ $ python metric.py --subset reference/test.eval \
 
 `test.eval` contains the subset of the test set used for the final evaluation (intersection of `test.leaderboard` and `test.eval` is obviously empty).
 
-`reference.final.txt` contains the final version of the annotation, released around the dates of the debriefing workshop (October 20-21, near Amsterdam).
+`reference.2016-10-16.txt` contains the final version of the annotation, released around the dates of the debriefing workshop (October 20-21, near Amsterdam).
 
+`queries.txt` contains the list of queries used for the final evaluation.
+
+####  Submissions
+
+`/submissions` directory contains runs submitted by participants.
